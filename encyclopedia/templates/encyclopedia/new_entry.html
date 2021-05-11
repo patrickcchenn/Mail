@@ -1,0 +1,35 @@
+{% extends "encyclopedia/layout.html" %}
+
+{% block title %} 
+{%if not title%}
+Create New Entry
+{% endif %}
+{%if title%}
+Edit Entry
+{% endif %}
+{%endblock%} 
+
+
+{% comment %} This template is for the new entry template {% endcomment %}
+{% block body %}
+{%if not title%}
+<form action="{% url 'new_page' %}" method="POST">
+  {% csrf_token %}  
+  <input type="text" name="title" placeholder="title" />
+  <br /><br />
+  <textarea name="content" placeholder="content" ></textarea>
+  <input type="submit" value="Save Entry" />
+</form>
+{% endif %}
+
+{% comment %} This template is for the edit entry template {% endcomment %}
+{%if title%}
+<form action="{% url 'new_page' %}" method="POST">
+{% csrf_token %}  
+  {{ form.as_p }}
+  <input type="submit" value="Edit Entry" />
+</form>
+
+{% endif %}
+
+{% endblock %}
