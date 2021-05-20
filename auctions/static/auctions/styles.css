@@ -1,0 +1,22 @@
+body {
+    padding: 10px;
+}
+
+textarea {
+    height: 40vh;
+    width: 80%;
+}
+
+.form{
+    height: 30px;
+     width: 300px; 
+     border: 2px solid grey; 
+     padding: 7px; 
+     margin-top: 10px; 
+     margin-bottom: 10px; 
+}
+
+.form{
+    border-style: groove;
+}
+

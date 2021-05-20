@@ -1,0 +1,113 @@
+{% extends "auctions/layout.html" %}
+
+{% block body %}
+    <h2>Listing: {{listing.name}}</h2>
+    {% if user.is_authenticated %}
+        <form action="{% url 'listing' listing.id %}" method="POST" class="form-group">
+            {% csrf_token %}  
+            <input class="btn btn-secondary"name="watchlist"  type="submit" value="Watchlist" />
+        </form>
+        {% if message %}
+            {{message}}
+        {% endif %}
+    {% else %}
+    {% endif %}
+
+    <div>   
+        <img src="{{listing.image_url}}" alt="{{listing.name}} photo" style="width:300px;">
+        {%if not listing.active %}
+        <big><b>Listing Is Closed and won by {{bids.bidder}}!!</b></big>
+        {%endif%}
+        <p>
+        {{listing.description}}
+        </p>
+        {% if bids %}
+                <big><b>{{bids}}</b></big>
+
+                {% if bids.bidder == user %}
+                    {{ listing.bids.count }} bid(s) so far. Your bid is the current bid.
+                {% else %}
+                    {{ listing.bids.count }} bid(s) so far. Your bid is not the current bid.
+                {% endif %}
+
+        {% else %}
+            <big><b>${{listing.initial_price}}</b></big>
+            <br>
+            0 bid so far.
+        {% endif %}
+        <form action="{% url 'listing' listing.id %}" method="POST" class="form-group">
+            {% csrf_token %}  
+            <input class="form-control" type="number" name="place_bid" placeholder="Bid" min={{bids.price | add:'1'}} />
+            
+            {% if not user.is_authenticated %}
+            <input class="btn btn-primary"name='bid' type="submit" value="Place Bid" disabled />
+
+            {% elif listing.creator == user %}
+                {%if not listing.active %}
+                    <input class="btn btn-primary"name='bid' type="submit" value="Place Bid" disabled />
+                    <input class="btn btn-danger"name='close' type="submit" value="Close listing" disabled />
+                {%else %}
+                    <input class="btn btn-primary"name='bid' type="submit" value="Place Bid" disabled />
+                    <input class="btn btn-danger"name='close' type="submit" value="Close listing"  />
+                {%endif%}
+            
+            {%else%}
+                {%if not listing.active %}
+                    <input class="btn btn-primary"name='bid' type="submit" value="Place Bid" disabled />
+                {%else %}
+                    <input class="btn btn-primary"name='bid' type="submit" value="Place Bid"  />
+                {%endif%}
+            {%endif%}
+        
+        </form>
+
+    </div>
+
+    <div>
+        <h2> Details </h2>
+        <ul>
+            <li>
+            Listed by: {{listing.creator}}
+            </li>
+            <li>
+            Category: <a href='{% url 'category' listing.category %} '> {{listing.category}} </a>
+            </li>
+            <li>
+            Created: {{listing.date_created}}
+            </li>
+        </ul>
+    </div>
+
+    <br>
+
+    <h2>Comments</h2>
+    
+    {% for comment in comments %}
+        <div class="comment border border-3 border-info">
+            <p class="info">
+                Comment({{ forloop.counter }}) by {{ comment.name }}    
+            </p>
+            {{ comment|linebreaks}}
+        </div>
+        <br>
+    {% empty %}
+        <p>There are no comments yet.</p>
+    {% endfor %}
+    
+    {% if new_comment %}
+        <h2>Your comment has been added.</h2>
+    {% else %}
+        <h2>Add a new comment</h2>
+        <form action="{% url 'comment' listing.id %}" method="post">
+            {{ comment_form.as_p }}
+            {% csrf_token %}
+            <p><input type="submit" value="Add comment"></p>
+        </form>
+    {% endif %}
+
+
+
+
+
+
+{% endblock %}
